@@ -1,0 +1,554 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>A little plan?</title>
+  <style>
+    :root {
+      --bg1: #fff7fb;
+      --bg2: #eef4ff;
+      --card: rgba(255,255,255,.72);
+      --text: #171717;
+      --muted: #6f6f76;
+      --pink: #ff5c9a;
+      --blue: #6c8dff;
+      --purple: #9b6cff;
+      --shadow: 0 22px 70px rgba(60, 70, 120, .18);
+      --line: rgba(255,255,255,.55);
+    }
+
+    * {
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Arial, sans-serif;
+      color: var(--text);
+      overflow: hidden;
+      background:
+        radial-gradient(circle at 10% 12%, rgba(255,92,154,.28), transparent 34%),
+        radial-gradient(circle at 88% 18%, rgba(108,141,255,.28), transparent 30%),
+        radial-gradient(circle at 50% 100%, rgba(155,108,255,.22), transparent 40%),
+        linear-gradient(135deg, var(--bg1), var(--bg2));
+    }
+
+    .blob {
+      position: fixed;
+      border-radius: 999px;
+      filter: blur(2px);
+      opacity: .55;
+      animation: float 8s ease-in-out infinite;
+      pointer-events: none;
+    }
+
+    .blob.one {
+      width: 160px;
+      height: 160px;
+      background: #ffc0dc;
+      top: 10%;
+      left: -40px;
+    }
+
+    .blob.two {
+      width: 190px;
+      height: 190px;
+      background: #cbd7ff;
+      bottom: 7%;
+      right: -55px;
+      animation-delay: -2s;
+    }
+
+    .blob.three {
+      width: 110px;
+      height: 110px;
+      background: #dfcdff;
+      top: 67%;
+      left: 18%;
+      animation-delay: -4s;
+    }
+
+    @keyframes float {
+      0%, 100% { transform: translateY(0) scale(1); }
+      50% { transform: translateY(-22px) scale(1.05); }
+    }
+
+    .wrap {
+      min-height: 100vh;
+      display: grid;
+      place-items: center;
+      padding: 22px;
+      position: relative;
+      z-index: 2;
+    }
+
+    .phone {
+      width: min(430px, 100%);
+      height: min(90vh, 760px);
+      border-radius: 38px;
+      padding: 18px;
+      background: linear-gradient(145deg, rgba(255,255,255,.62), rgba(255,255,255,.25));
+      box-shadow: var(--shadow);
+      border: 1px solid var(--line);
+      backdrop-filter: blur(24px);
+      position: relative;
+      overflow-y: auto;
+      overflow-x: hidden;
+    }
+
+    .topbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 4px 4px 16px;
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .pill {
+      padding: 8px 12px;
+      border-radius: 999px;
+      background: rgba(255,255,255,.62);
+      border: 1px solid rgba(255,255,255,.7);
+    }
+
+    .screen {
+      position: relative;
+      min-height: 575px;
+      height: auto;
+      overflow-y: auto;
+    }
+
+    .page {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      opacity: 0;
+      transform: translateY(18px) scale(.985);
+      pointer-events: none;
+      transition: opacity .55s cubic-bezier(.2,.8,.2,1), transform .55s cubic-bezier(.2,.8,.2,1);
+    }
+
+    .page.active {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+      pointer-events: auto;
+    }
+
+    .emoji {
+      font-size: 48px;
+      margin-bottom: 16px;
+      animation: pop .7s ease;
+    }
+
+    @keyframes pop {
+      from { transform: scale(.85); opacity: 0; }
+      to { transform: scale(1); opacity: 1; }
+    }
+
+    h1 {
+      font-size: clamp(32px, 8vw, 46px);
+      line-height: .98;
+      letter-spacing: -1.8px;
+      margin: 0 0 14px;
+    }
+
+    p {
+      color: var(--muted);
+      font-size: 17px;
+      line-height: 1.45;
+      margin: 0 0 28px;
+    }
+
+    .soft {
+      background: rgba(255,255,255,.58);
+      border: 1px solid rgba(255,255,255,.7);
+      border-radius: 28px;
+      padding: 22px;
+      box-shadow: 0 14px 40px rgba(0,0,0,.06);
+    }
+
+    .buttons {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      justify-content: center;
+      min-height: 80px;
+      position: relative;
+      overflow: visible;
+    }
+
+    button, .option, input {
+      font: inherit;
+    }
+
+    button {
+      border: none;
+      border-radius: 999px;
+      padding: 15px 20px;
+      font-weight: 800;
+      cursor: pointer;
+      transition: transform .22s ease, box-shadow .22s ease, filter .22s ease;
+    }
+
+    button:active {
+      transform: scale(.96);
+    }
+
+    .main {
+      color: white;
+      min-width: 145px;
+      background: linear-gradient(135deg, var(--pink), var(--purple), var(--blue));
+      box-shadow: 0 14px 30px rgba(255,92,154,.28);
+    }
+
+    .ghost {
+      color: #555;
+      background: rgba(255,255,255,.7);
+      border: 1px solid rgba(255,255,255,.75);
+      position: relative;
+      z-index: 5;
+      transition: transform .28s cubic-bezier(.22, 1, .36, 1), background .2s ease;
+      will-change: transform;
+    }
+
+    .optionGrid {
+      display: grid;
+      gap: 12px;
+      margin-top: 8px;
+    }
+
+    .option {
+      width: 100%;
+      text-align: left;
+      border: 1px solid rgba(255,255,255,.75);
+      background: rgba(255,255,255,.68);
+      border-radius: 24px;
+      padding: 16px 17px;
+      color: #202023;
+      box-shadow: 0 12px 28px rgba(0,0,0,.045);
+    }
+
+    .option span {
+      display: block;
+      font-weight: 850;
+      font-size: 17px;
+    }
+
+    .option small {
+      display: block;
+      color: var(--muted);
+      margin-top: 4px;
+      font-size: 13px;
+    }
+
+    .option.selected {
+      outline: 3px solid rgba(255,92,154,.25);
+      border-color: rgba(255,92,154,.7);
+      background: rgba(255,255,255,.9);
+      transform: translateY(-2px);
+    }
+
+    .field {
+      margin: 11px 0;
+      text-align: left;
+    }
+
+    label {
+      font-size: 13px;
+      color: var(--muted);
+      font-weight: 800;
+      margin-left: 8px;
+    }
+
+    input {
+      width: 100%;
+      margin-top: 7px;
+      border: 1px solid rgba(255,255,255,.8);
+      background: rgba(255,255,255,.72);
+      border-radius: 20px;
+      padding: 16px;
+      font-size: 16px;
+      outline: none;
+    }
+
+    input:focus {
+      border-color: rgba(255,92,154,.75);
+      box-shadow: 0 0 0 4px rgba(255,92,154,.13);
+    }
+
+    .note {
+      margin-top: 16px;
+      padding: 14px;
+      border-radius: 20px;
+      background: rgba(255,255,255,.58);
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.4;
+    }
+
+    .tiny {
+      position: absolute;
+      bottom: 8px;
+      left: 0;
+      right: 0;
+      text-align: center;
+      color: rgba(70,70,78,.48);
+      font-size: 12px;
+    }
+
+    .confetti {
+      position: fixed;
+      width: 8px;
+      height: 14px;
+      top: -20px;
+      border-radius: 3px;
+      animation: fall 1.9s linear forwards;
+      z-index: 10;
+    }
+
+    @keyframes fall {
+      to {
+        transform: translateY(110vh) rotate(500deg);
+        opacity: 0;
+      }
+    }
+
+    @media (max-height: 720px) {
+      body { overflow: auto; }
+      .wrap { padding: 16px; }
+      .phone { min-height: 620px; }
+      .screen { height: 535px; }
+      h1 { font-size: clamp(30px, 8vw, 42px); }
+    }
+  </style>
+</head>
+<body>
+  <div class="blob one"></div>
+  <div class="blob two"></div>
+  <div class="blob three"></div>
+
+  <main class="wrap">
+    <section class="phone">
+      <div class="topbar">
+        <div class="pill">a tiny question</div>
+        <div class="pill">no pressure-ish</div>
+      </div>
+
+      <div class="screen">
+        <section class="page active" id="page1">
+          <div class="soft">
+            <div class="emoji">🌷</div>
+            <h1>Would ya wanna hang out with me?</h1>
+            <p>
+              Nothing too serious. Just us, a good little plan, and maybe a nice memory if ya say yes.
+            </p>
+            <div class="buttons">
+              <button class="main" onclick="nextPage('page2')">Yes, okay 😌</button>
+              <button class="ghost" id="noBtn">No</button>
+            </div>
+          </div>
+          <div class="tiny">the no button has trust issues</div>
+        </section>
+
+        <section class="page" id="page2">
+          <div class="soft">
+            <div class="emoji">✨</div>
+            <h1>Pick the vibe</h1>
+            <p>Choose what sounds nicest. I’ll handle the rest.</p>
+
+            <div class="optionGrid">
+              <button class="option" onclick="choosePlan(this, 'Coffee')">
+                <span>☕ Coffee</span>
+                <small>simple, chill, easy to talk</small>
+              </button>
+
+              <button class="option" onclick="choosePlan(this, 'Sushi')">
+                <span>🍣 Sushi</span>
+                <small>good food, no awkward fancy stuff</small>
+              </button>
+
+              <button class="option" onclick="choosePlan(this, 'Sunset walk')">
+                <span>🌅 Sunset walk</span>
+                <small>city lights, soft sky, cute timing</small>
+              </button>
+
+              <button class="option" onclick="choosePlan(this, 'City shopping')">
+                <span>🛍️ City shopping</span>
+                <small>browse around, laugh at random things</small>
+              </button>
+
+              <button class="option" onclick="choosePlan(this, 'State Library visit')">
+                <span>📚 State Library visit</span>
+                <small>quiet, pretty, calm, kinda sweet</small>
+              </button>
+            </div>
+
+            <button class="main" style="width:100%; margin-top:16px;" onclick="goToDate()">Next</button>
+          </div>
+        </section>
+
+        <section class="page" id="page3">
+          <div class="soft">
+            <div class="emoji">🗓️</div>
+            <h1>Pick a day and time</h1>
+            <p id="chosenPlanText">For our little plan.</p>
+
+            <div class="field">
+              <label for="date">Date</label>
+              <input id="date" type="date" />
+            </div>
+
+            <div class="field">
+              <label for="time">Time</label>
+              <input id="time" type="time" />
+            </div>
+
+            <button class="main" style="width:100%; margin-top:12px;" onclick="finish()">Lock it in 💌</button>
+            <div class="note">Pick whatever feels easy for ya. I’m not making this complicated.</div>
+          </div>
+        </section>
+
+        <section class="page" id="page4">
+          <div class="soft">
+            <div class="emoji">💫</div>
+            <h1>Thank youuu</h1>
+            <p id="finalText"></p>
+            <button class="main" style="width:100%;" onclick="restart()">Start again</button>
+          </div>
+        </section>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    let selectedPlan = "";
+    let noRunCount = 0;
+
+    const noBtn = document.getElementById("noBtn");
+
+    function nextPage(id) {
+      document.querySelectorAll(".page").forEach(page => page.classList.remove("active"));
+      document.getElementById(id).classList.add("active");
+    }
+
+    function moveNoButton() {
+      noRunCount += 1;
+
+      const currentX = Number(noBtn.dataset.x || 0);
+      const currentY = Number(noBtn.dataset.y || 0);
+
+      let x = Math.random() * 140 - 70;
+      let y = Math.random() * 80 - 40;
+
+      if (Math.abs(x - currentX) < 35) {
+        x = x < 0 ? x - 45 : x + 45;
+      }
+
+      if (Math.abs(y - currentY) < 20) {
+        y = y < 0 ? y - 25 : y + 25;
+      }
+
+      x = Math.max(-95, Math.min(95, x));
+      y = Math.max(-48, Math.min(48, y));
+
+      noBtn.dataset.x = x;
+      noBtn.dataset.y = y;
+      noBtn.style.transform = `translate(${x}px, ${y}px)`;
+
+      if (noRunCount > 4) {
+        noBtn.textContent = "Still no? 😭";
+      }
+
+      if (noRunCount > 8) {
+        noBtn.textContent = "Okay fine, yes then";
+        setTimeout(() => nextPage("page2"), 450);
+      }
+    }
+
+    noBtn.addEventListener("mouseenter", moveNoButton);
+    noBtn.addEventListener("mouseover", moveNoButton);
+
+    noBtn.addEventListener("touchstart", function(e) {
+      e.preventDefault();
+      moveNoButton();
+    }, { passive: false });
+
+    noBtn.addEventListener("click", function(e) {
+      e.preventDefault();
+      moveNoButton();
+    });
+
+    function choosePlan(button, plan) {
+      selectedPlan = plan;
+      document.querySelectorAll(".option").forEach(btn => btn.classList.remove("selected"));
+      button.classList.add("selected");
+    }
+
+    function goToDate() {
+      if (!selectedPlan) {
+        alert("Pick one vibe first 😌");
+        return;
+      }
+      document.getElementById("chosenPlanText").textContent = "For " + selectedPlan.toLowerCase() + ".";
+      nextPage("page3");
+    }
+
+    function finish() {
+      const date = document.getElementById("date").value;
+      const time = document.getElementById("time").value;
+
+      if (!date || !time) {
+        alert("Pick both date and time first 😌");
+        return;
+      }
+
+      const prettyDate = new Date(date + "T" + time).toLocaleString([], {
+        weekday: "long",
+        month: "short",
+        day: "numeric",
+        hour: "numeric",
+        minute: "2-digit"
+      });
+
+      document.getElementById("finalText").innerHTML =
+        "Locked in for <b>" + selectedPlan + "</b> on <b>" + prettyDate + "</b>.<br><br>I’m coming to pick ya up 😎";
+
+      confetti();
+      nextPage("page4");
+    }
+
+    function restart() {
+      selectedPlan = "";
+      noRunCount = 0;
+      noBtn.textContent = "No";
+      noBtn.removeAttribute("style");
+      noBtn.dataset.x = "0";
+      noBtn.dataset.y = "0";
+      document.querySelectorAll(".option").forEach(btn => btn.classList.remove("selected"));
+      document.getElementById("date").value = "";
+      document.getElementById("time").value = "";
+      nextPage("page1");
+    }
+
+    function confetti() {
+      const colors = ["#ff5c9a", "#6c8dff", "#9b6cff", "#ffd166", "#06d6a0"];
+      for (let i = 0; i < 50; i++) {
+        const piece = document.createElement("div");
+        piece.className = "confetti";
+        piece.style.left = Math.random() * 100 + "vw";
+        piece.style.background = colors[Math.floor(Math.random() * colors.length)];
+        piece.style.animationDelay = Math.random() * .55 + "s";
+        document.body.appendChild(piece);
+        setTimeout(() => piece.remove(), 2400);
+      }
+    }
+  </script>
+</body>
+</html>
